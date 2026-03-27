@@ -430,17 +430,6 @@
   </div>
 
   <div class="form-body">
-    <!-- Google Sheets 연동 설정 -->
-    <div class="setup-banner" id="setupBanner">
-      <div class="icon">🔗</div>
-      <div class="text" id="setupText">
-        <strong>Google Sheets 연동 설정</strong><br>
-        Apps Script 배포 후 받은 웹 앱 URL을 아래에 붙여넣고 "연결"을 눌러주세요.
-        <input type="text" id="scriptUrl" placeholder="https://script.google.com/macros/s/AKfyc.../exec">
-        <button class="connect-btn" onclick="connectSheet()">연결</button>
-      </div>
-    </div>
-
     <div class="info-row">
       <div class="info-group">
         <label>소속 부서</label>
@@ -540,43 +529,12 @@
   // =====================================================
   // ★ 설정: 아래 URL을 Apps Script 배포 URL로 교체하세요 ★
   // =====================================================
-  let APPS_SCRIPT_URL = '';
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyFbk0Y3anRt7JhUq4xRb_GOpkqWO7DhECL5kol2Cu5BxUXooeYFmi549VvQuBvQqrS/exec';
 
   // 날짜 표시
   const now = new Date();
   document.getElementById('dateDisplay').textContent = 
     `작성일: ${now.getFullYear()}. ${String(now.getMonth()+1).padStart(2,'0')}. ${String(now.getDate()).padStart(2,'0')}.`;
-
-  // URL 파라미터에서 endpoint 자동 로드
-  function initUrl() {
-    const params = new URLSearchParams(window.location.search);
-    const urlParam = params.get('endpoint');
-    if (urlParam) {
-      APPS_SCRIPT_URL = urlParam;
-      // endpoint가 있으면 설정 배너 완전 숨김 (수강생용)
-      document.getElementById('setupBanner').style.display = 'none';
-    }
-  }
-  initUrl();
-
-  function connectSheet() {
-    const url = document.getElementById('scriptUrl').value.trim();
-    if (!url.startsWith('https://script.google.com/')) {
-      showToast('⚠️ 올바른 Apps Script URL을 입력해 주세요.', true);
-      return;
-    }
-    APPS_SCRIPT_URL = url;
-    showConnected();
-    showToast('✅ Google Sheets가 연결되었습니다.');
-  }
-
-  function showConnected() {
-    const banner = document.getElementById('setupBanner');
-    banner.classList.add('connected');
-    document.getElementById('setupText').innerHTML = 
-      '<strong>✅ Google Sheets 연결됨</strong><br>' +
-      '<span style="font-size:12px;color:#718096;word-break:break-all;">' + APPS_SCRIPT_URL + '</span>';
-  }
 
   // Step 관리
   let stepCount = 0;
@@ -636,11 +594,6 @@
 
   // 제출
   async function submitForm() {
-    if (!APPS_SCRIPT_URL) {
-      showToast('⚠️ 먼저 Google Sheets URL을 연결해 주세요.', true);
-      return;
-    }
-
     const data = collectData();
     const err = validate(data);
     if (err) { showToast('⚠️ ' + err, true); return; }
