@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 업무 자동화 요구사항 정의서</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
+  
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: #1a202c;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2d5a8e 100%);
+    color: #fff;
+    padding: 28px 36px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .header h1 .ai-badge {
+    background: rgba(255,255,255,0.2);
+    padding: 2px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .header .date-display {
+    font-size: 14px;
+    opacity: 0.85;
+  }
+
+  .form-body { padding: 32px 36px; }
+
+  .info-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .info-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #718096;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .info-group input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .info-group input:focus {
+    outline: none;
+    border-color: #2d5a8e;
+    box-shadow: 0 0 0 3px rgba(45,90,142,0.1);
+  }
+
+  .guide-box {
+    background: #fffbeb;
+    border-left: 4px solid #f6ad55;
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 28px;
+    font-size: 13px;
+    color: #744210;
+    line-height: 1.6;
+  }
+
+  .guide-box::before { content: '💡 '; }
+
+  .section { margin-bottom: 32px; }
+
+  .section-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1e3a5f;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 8px;
+    border-bottom: 2.5px solid #1e3a5f;
+  }
+
+  .section-num {
+    background: #1e3a5f;
+    color: #fff;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: inherit;
+    line-height: 1.7;
+    resize: vertical;
+    min-height: 100px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  textarea:focus {
+    outline: none;
+    border-color: #2d5a8e;
+    box-shadow: 0 0 0 3px rgba(45,90,142,0.1);
+  }
+
+  textarea::placeholder { color: #a0aec0; font-size: 13px; }
+
+  .task-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+
+  .task-card {
+    border-radius: 10px;
+    padding: 18px;
+  }
+
+  .task-card.user-card {
+    background: #f7fafc;
+    border: 1.5px solid #e2e8f0;
+  }
+
+  .task-card.asis-card {
+    background: #fff5f5;
+    border: 1.5px solid #fed7d7;
+  }
+
+  .task-card.tobe-card {
+    background: #f0fff4;
+    border: 1.5px solid #c6f6d5;
+  }
+
+  .task-card-label {
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .user-card .task-card-label { color: #4a5568; }
+  .asis-card .task-card-label { color: #e53e3e; }
+  .tobe-card .task-card-label { color: #38a169; }
+
+  .task-card textarea {
+    background: rgba(255,255,255,0.7);
+    border-color: transparent;
+  }
+
+  .task-card textarea:focus {
+    background: #fff;
+    border-color: #2d5a8e;
+  }
+
+  .arrow-container {
+    display: flex; align-items: center; justify-content: center; position: relative;
+  }
+
+  .arrow-container::after {
+    content: '→'; font-size: 24px; color: #a0aec0;
+    position: absolute; top: 50%; right: -24px; transform: translateY(-50%);
+  }
+
+  .process-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1.5px solid #e2e8f0;
+  }
+
+  .process-table thead th {
+    background: #f7fafc;
+    padding: 12px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #4a5568;
+    text-align: left;
+    border-bottom: 1.5px solid #e2e8f0;
+  }
+
+  .process-table thead th:first-child { width: 80px; text-align: center; }
+
+  .process-table tbody td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #f0f4f8;
+    vertical-align: top;
+  }
+
+  .process-table tbody tr:last-child td { border-bottom: none; }
+
+  .step-badge {
+    background: #edf2f7; color: #4a5568;
+    font-size: 12px; font-weight: 600;
+    padding: 4px 10px; border-radius: 12px;
+    display: inline-block; text-align: center;
+  }
+
+  .process-table input {
+    width: 100%; padding: 8px 10px;
+    border: 1px solid transparent; border-radius: 6px;
+    font-size: 13px; font-family: inherit;
+    background: transparent; transition: all 0.2s;
+  }
+
+  .process-table input:hover { background: #f7fafc; }
+
+  .process-table input:focus {
+    outline: none; background: #fff;
+    border-color: #2d5a8e;
+    box-shadow: 0 0 0 2px rgba(45,90,142,0.1);
+  }
+
+  .process-table input::placeholder { color: #cbd5e0; font-size: 12px; }
+
+  .add-step-btn {
+    display: flex; align-items: center; gap: 6px;
+    margin-top: 10px; padding: 8px 16px;
+    background: none; border: 1.5px dashed #cbd5e0;
+    border-radius: 8px; color: #718096;
+    font-size: 13px; font-family: inherit; cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .add-step-btn:hover {
+    border-color: #2d5a8e; color: #2d5a8e; background: #f7fafc;
+  }
+
+  .footer {
+    padding: 20px 36px;
+    background: #f7fafc;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-brand { font-size: 13px; font-weight: 700; color: #1e3a5f; }
+  .footer-project { font-size: 11px; color: #a0aec0; }
+
+  .btn-group { display: flex; gap: 10px; }
+
+  .btn {
+    padding: 10px 24px; border: none; border-radius: 8px;
+    font-size: 14px; font-weight: 600; font-family: inherit;
+    cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .btn-secondary { background: #edf2f7; color: #4a5568; }
+  .btn-secondary:hover { background: #e2e8f0; }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #1e3a5f, #2d5a8e);
+    color: #fff;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(30,58,95,0.3);
+  }
+
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-primary:disabled {
+    opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none;
+  }
+
+  /* 설정 배너 */
+  .setup-banner {
+    background: #ebf8ff;
+    border: 1.5px solid #90cdf4;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .setup-banner.connected {
+    background: #f0fff4;
+    border-color: #9ae6b4;
+  }
+
+  .setup-banner .icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+
+  .setup-banner .text { font-size: 13px; line-height: 1.6; color: #2d3748; }
+  .setup-banner .text strong { color: #1e3a5f; }
+
+  .setup-banner input {
+    width: 100%; padding: 8px 12px; margin-top: 8px;
+    border: 1.5px solid #cbd5e0; border-radius: 6px;
+    font-size: 13px; font-family: monospace;
+  }
+
+  .setup-banner input:focus {
+    outline: none; border-color: #2d5a8e;
+  }
+
+  .setup-banner .connect-btn {
+    margin-top: 8px; padding: 6px 16px;
+    background: #2d5a8e; color: #fff; border: none;
+    border-radius: 6px; font-size: 12px; font-weight: 600;
+    font-family: inherit; cursor: pointer;
+  }
+
+  .setup-banner .connect-btn:hover { background: #1e3a5f; }
+
+  /* 토스트 */
+  .toast {
+    position: fixed; bottom: 30px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #1e3a5f; color: #fff;
+    padding: 14px 28px; border-radius: 10px;
+    font-size: 14px; font-weight: 500;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    opacity: 0; transition: all 0.4s ease;
+    z-index: 1000; pointer-events: none;
+  }
+
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.error { background: #e53e3e; }
+
+  /* 스피너 */
+  .spinner {
+    display: inline-block; width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff; border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* 성공 화면 */
+  .success-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 999;
+    justify-content: center; align-items: center;
+  }
+
+  .success-overlay.show { display: flex; }
+
+  .success-card {
+    background: #fff; border-radius: 16px;
+    padding: 40px; text-align: center;
+    max-width: 400px; width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    animation: popIn 0.3s ease;
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .success-card .icon { font-size: 48px; margin-bottom: 16px; }
+  .success-card h2 { font-size: 20px; color: #1e3a5f; margin-bottom: 8px; }
+  .success-card p { font-size: 14px; color: #718096; line-height: 1.6; margin-bottom: 24px; }
+
+  .success-card .btn-group { justify-content: center; }
+
+  @media (max-width: 768px) {
+    body { padding: 10px; }
+    .form-body { padding: 20px 18px; }
+    .info-row { grid-template-columns: 1fr; }
+    .task-grid { grid-template-columns: 1fr; }
+    .arrow-container::after { display: none; }
+    .header { padding: 20px 18px; flex-direction: column; gap: 8px; align-items: flex-start; }
+    .footer { padding: 16px 18px; flex-direction: column; gap: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1><span class="ai-badge">AI</span> 업무 자동화 요구사항 정의서</h1>
+    <div class="date-display" id="dateDisplay"></div>
+  </div>
+
+  <div class="form-body">
+    <!-- Google Sheets 연동 설정 -->
+    <div class="setup-banner" id="setupBanner">
+      <div class="icon">🔗</div>
+      <div class="text" id="setupText">
+        <strong>Google Sheets 연동 설정</strong><br>
+        Apps Script 배포 후 받은 웹 앱 URL을 아래에 붙여넣고 "연결"을 눌러주세요.
+        <input type="text" id="scriptUrl" placeholder="https://script.google.com/macros/s/AKfyc.../exec">
+        <button class="connect-btn" onclick="connectSheet()">연결</button>
+      </div>
+    </div>
+
+    <div class="info-row">
+      <div class="info-group">
+        <label>소속 부서</label>
+        <input type="text" id="dept" placeholder="부서명 입력">
+      </div>
+      <div class="info-group">
+        <label>직급 / 직책</label>
+        <input type="text" id="position" placeholder="예: 책임 / 팀장">
+      </div>
+      <div class="info-group">
+        <label>작성자</label>
+        <input type="text" id="author" placeholder="성명">
+      </div>
+    </div>
+
+    <div class="guide-box">
+      아래 3개 항목 중심으로 간단히 작성해 주세요. 업무 프로세스 분석은 실제 수행 순서대로 적을수록 AI 자동화 검토에 도움이 됩니다.
+    </div>
+
+    <!-- 01. 요구사항 -->
+    <div class="section">
+      <div class="section-title">
+        <span class="section-num">01</span> 요구사항
+      </div>
+      <textarea id="requirement" rows="4" placeholder="원하는 기능이나 자동화 아이디어를 자유롭게 적어주세요.&#10;예: 매일 반복되는 뉴스 스크랩을 자동화하여 메일로 받고 싶습니다."></textarea>
+    </div>
+
+    <!-- 02. 과업정의 -->
+    <div class="section">
+      <div class="section-title">
+        <span class="section-num">02</span> 과업정의
+      </div>
+      <div class="task-grid">
+        <div class="task-card user-card">
+          <div class="task-card-label">엔드유저 정의</div>
+          <textarea id="enduser" rows="3" placeholder="누가 이 서비스를 사용하나요?&#10;예: QC팀 전원"></textarea>
+        </div>
+        <div class="task-card asis-card arrow-container">
+          <div class="task-card-label">AS-IS (현재 방식)</div>
+          <textarea id="asis" rows="3" placeholder="현재 어떻게 업무를 하고 있나요?&#10;예: 담당자가 수동으로 엑셀 취합"></textarea>
+        </div>
+        <div class="task-card tobe-card">
+          <div class="task-card-label">TO-BE (기대 모습)</div>
+          <textarea id="tobe" rows="3" placeholder="자동화 후 어떤 모습이길 원하나요?&#10;예: AI가 자동 취합 후 요약 메일 발송"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- 03. 업무 프로세스 분석 -->
+    <div class="section">
+      <div class="section-title">
+        <span class="section-num">03</span> 업무 프로세스 분석
+      </div>
+      <table class="process-table">
+        <thead>
+          <tr>
+            <th>단계</th>
+            <th>현재 업무 내용</th>
+            <th>사용 자료 · 시스템</th>
+            <th>불편 · 반복 포인트</th>
+          </tr>
+        </thead>
+        <tbody id="processBody"></tbody>
+      </table>
+      <button class="add-step-btn" onclick="addStep()">+ 단계 추가</button>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div>
+      <div class="footer-brand">HANLIM PHARM.</div>
+      <div class="footer-project">전사 AI 경쟁력 기반 확립 프로젝트 2026</div>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-secondary" onclick="resetForm()">초기화</button>
+      <button class="btn btn-primary" id="submitBtn" onclick="submitForm()">📤 제출하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 성공 오버레이 -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-card">
+    <div class="icon">🎉</div>
+    <h2>제출이 완료되었습니다!</h2>
+    <p>요구사항 정의서가 Google Sheets에<br>성공적으로 저장되었습니다.</p>
+    <div class="btn-group">
+      <button class="btn btn-secondary" onclick="closeSuccess()">닫기</button>
+      <button class="btn btn-primary" onclick="newForm()">새 작성</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // =====================================================
+  // ★ 설정: 아래 URL을 Apps Script 배포 URL로 교체하세요 ★
+  // =====================================================
+  let APPS_SCRIPT_URL = '';
+
+  // 날짜 표시
+  const now = new Date();
+  document.getElementById('dateDisplay').textContent = 
+    `작성일: ${now.getFullYear()}. ${String(now.getMonth()+1).padStart(2,'0')}. ${String(now.getDate()).padStart(2,'0')}.`;
+
+  // URL 저장/불러오기 (URL 파라미터 또는 수동 입력)
+  function initUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const urlParam = params.get('endpoint');
+    if (urlParam) {
+      APPS_SCRIPT_URL = urlParam;
+      showConnected();
+    }
+  }
+  initUrl();
+
+  function connectSheet() {
+    const url = document.getElementById('scriptUrl').value.trim();
+    if (!url.startsWith('https://script.google.com/')) {
+      showToast('⚠️ 올바른 Apps Script URL을 입력해 주세요.', true);
+      return;
+    }
+    APPS_SCRIPT_URL = url;
+    showConnected();
+    showToast('✅ Google Sheets가 연결되었습니다.');
+  }
+
+  function showConnected() {
+    const banner = document.getElementById('setupBanner');
+    banner.classList.add('connected');
+    document.getElementById('setupText').innerHTML = 
+      '<strong>✅ Google Sheets 연결됨</strong><br>' +
+      '<span style="font-size:12px;color:#718096;word-break:break-all;">' + APPS_SCRIPT_URL + '</span>';
+  }
+
+  // Step 관리
+  let stepCount = 0;
+  function addStep() {
+    stepCount++;
+    const tbody = document.getElementById('processBody');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="text-align:center"><span class="step-badge">Step ${stepCount}</span></td>
+      <td><input type="text" class="step-task" placeholder="업무 내용을 입력하세요"></td>
+      <td><input type="text" class="step-system" placeholder="사용 자료 · 시스템"></td>
+      <td><input type="text" class="step-pain" placeholder="불편 · 반복 포인트"></td>
+    `;
+    tbody.appendChild(tr);
+  }
+  for (let i = 0; i < 5; i++) addStep();
+
+  // 데이터 수집
+  function collectData() {
+    const steps = [];
+    document.querySelectorAll('#processBody tr').forEach((row, i) => {
+      steps.push({
+        step: i + 1,
+        task: row.querySelector('.step-task').value,
+        system: row.querySelector('.step-system').value,
+        pain: row.querySelector('.step-pain').value
+      });
+    });
+    return {
+      submittedAt: new Date().toLocaleString('ko-KR'),
+      dept: document.getElementById('dept').value,
+      position: document.getElementById('position').value,
+      author: document.getElementById('author').value,
+      requirement: document.getElementById('requirement').value,
+      enduser: document.getElementById('enduser').value,
+      asis: document.getElementById('asis').value,
+      tobe: document.getElementById('tobe').value,
+      steps: steps
+    };
+  }
+
+  // 토스트
+  function showToast(msg, isError) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show' + (isError ? ' error' : '');
+    setTimeout(() => t.className = 'toast', 3000);
+  }
+
+  // 유효성 검사
+  function validate(data) {
+    if (!data.dept.trim()) return '소속 부서를 입력해 주세요.';
+    if (!data.author.trim()) return '작성자를 입력해 주세요.';
+    if (!data.requirement.trim()) return '요구사항을 입력해 주세요.';
+    return null;
+  }
+
+  // 제출
+  async function submitForm() {
+    if (!APPS_SCRIPT_URL) {
+      showToast('⚠️ 먼저 Google Sheets URL을 연결해 주세요.', true);
+      return;
+    }
+
+    const data = collectData();
+    const err = validate(data);
+    if (err) { showToast('⚠️ ' + err, true); return; }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> 제출 중...';
+
+    try {
+      await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      // no-cors 모드에서는 응답을 읽을 수 없으므로 성공으로 처리
+      document.getElementById('successOverlay').classList.add('show');
+    } catch (error) {
+      showToast('❌ 제출 중 오류가 발생했습니다. 다시 시도해 주세요.', true);
+      console.error(error);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '📤 제출하기';
+    }
+  }
+
+  // 성공 후 처리
+  function closeSuccess() {
+    document.getElementById('successOverlay').classList.remove('show');
+  }
+
+  function newForm() {
+    closeSuccess();
+    document.querySelectorAll('input:not(#scriptUrl), textarea').forEach(el => el.value = '');
+  }
+
+  // 초기화
+  function resetForm() {
+    if (!confirm('작성 내용을 모두 초기화하시겠습니까?')) return;
+    document.querySelectorAll('input:not(#scriptUrl), textarea').forEach(el => el.value = '');
+    showToast('🔄 초기화되었습니다.');
+  }
+</script>
+
+</body>
+</html>
