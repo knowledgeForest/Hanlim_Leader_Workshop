@@ -547,13 +547,14 @@
   document.getElementById('dateDisplay').textContent = 
     `작성일: ${now.getFullYear()}. ${String(now.getMonth()+1).padStart(2,'0')}. ${String(now.getDate()).padStart(2,'0')}.`;
 
-  // URL 저장/불러오기 (URL 파라미터 또는 수동 입력)
+  // URL 파라미터에서 endpoint 자동 로드
   function initUrl() {
     const params = new URLSearchParams(window.location.search);
     const urlParam = params.get('endpoint');
     if (urlParam) {
       APPS_SCRIPT_URL = urlParam;
-      showConnected();
+      // endpoint가 있으면 설정 배너 완전 숨김 (수강생용)
+      document.getElementById('setupBanner').style.display = 'none';
     }
   }
   initUrl();
