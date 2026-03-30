@@ -464,9 +464,12 @@ function collectSubmitData(){
 async function submitToSheet(){
   if(!APPS_SCRIPT_URL) return false;
   try{
-    await fetch(APPS_SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify(collectSubmitData())});
+    // form 방식으로 전송 (no-cors에서도 body가 정상 전달됨)
+    const formData = new FormData();
+    formData.append("payload", JSON.stringify(collectSubmitData()));
+    await fetch(APPS_SCRIPT_URL,{method:"POST",mode:"no-cors",body:formData});
     return true;
-  }catch(e){return false;}
+  }catch(e){console.error("Sheet submit error:",e);return false;}
 }
 
 async function submitForm(){
